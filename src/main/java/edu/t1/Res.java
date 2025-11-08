@@ -1,12 +1,9 @@
 package edu.t1;
 
-import edu.t1.Default;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class Res {
     //суть метода в том, что он смотрит на классе объекта аннотацию
@@ -14,7 +11,6 @@ public class Res {
     //указанного в конфиг классе этой аннотации
     public void reset(Object... obj) throws Exception {
         Default def;
-        boolean isDefExists = false;
         Class def_class_value = null;
         if (obj != null) {
             for (Object o : obj) {
@@ -33,14 +29,12 @@ public class Res {
                         def_class_value = def.value();
                     }
 
-                    Class fieldtype = f.getType();
+                    Class<?> fieldType = f.getType();
                     if (def_class_value != null) {
-                        isDefExists = false;
                         Field[] defValueFields = def_class_value.getDeclaredFields();
                         for (Field f_def : defValueFields) {
-                            if (fieldtype.equals(f_def.getType())) {
+                            if (fieldType.equals(f_def.getType())) {
                                 f.set(o, f_def.get(def_class_value.newInstance()));
-                                isDefExists = true;
                                 break;
                             }
                         }
