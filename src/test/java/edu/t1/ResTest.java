@@ -6,22 +6,14 @@ import org.junit.jupiter.api.Test;
 import java.util.Objects;
 
 public class ResTest {
-
-
     /**
      * "Test with null object parameters!"
      */
-    @Test()
-    public void testWithNullObject()
-    {
-        try {
-            Res obj = new Res();
-            Res.setDefaultValues(obj, null, null); // или нужные аргументы
-        } catch (Exception e) {
-        }
-        Assertions.assertTrue(true);
+    @Test
+    public void testWithNullObject() {
+        A result = Res.setDefaultValues(null, null, null);
+        Assertions.assertNull(result);
     }
-
 
     /**
      * Test with using full functionality of reset, using test classes
@@ -48,18 +40,12 @@ public class ResTest {
     }
 
     // Test with test class without default of annotation
-    @Test()
+    @Test
     public void testListOfClassesWithoutDefault() {
-        Object[] actual = new Object[]{new C()};
-        Object[] expected = new Object[]{new C()};
-        try {
-            Res obj = new Res();
-            Res.setDefaultValues(obj, null, null); // или нужные аргументы
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Assertions.assertArrayEquals(actual, expected);
-
+        C c = new C();
+        C actual = new C();
+        Res.setDefaultValues(actual, null, null); // У C нет @Default → ничего не изменится
+        Assertions.assertEquals(c, actual);
     }
 }
 
