@@ -1,8 +1,9 @@
+package edu.t1;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class ResTest {
 

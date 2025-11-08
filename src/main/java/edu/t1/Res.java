@@ -1,4 +1,4 @@
-package ru.t1;
+package edu.t1;
 
 import edu.t1.Default;
 

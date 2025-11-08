@@ -1,4 +1,4 @@
-package ru.t1;
+package edu.t1;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
