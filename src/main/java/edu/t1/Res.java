@@ -1,57 +1,55 @@
 package edu.t1;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 public class Res {
-    //суть метода в том, что он смотрит на классе объекта аннотацию
-    // и если она есть - то скидывает значения всех полей до состояния
-    //указанного в конфиг классе этой аннотации
-    public void reset(Object... obj) throws Exception {
-        Default def;
-        Class def_class_value = null;
-        if (obj != null) {
-            for (Object o : obj) {
-                List<Field> fields =new ArrayList<>();
-                Class clz;
-                clz = o.getClass();
-                // получаем все поля класса и его родительские классы
-                // и добавляем их в список
-                while (clz != null) {
-                    Field[] fields2 = clz.getDeclaredFields();
-                    fields.addAll(Arrays.stream(fields2).toList());
-                    clz = clz.getSuperclass();
-                }
-                // получаем все поля класса
-                // и если класс аннотирован Default
-                // то получаем конфиг класс аннотации
-                // и скидываем все поля до значений из конфиг класса
-                for (Field f : fields) {
-                    if ( o.getClass().isAnnotationPresent(Default.class)) {
-                        def = o.getClass().getAnnotation(Default.class);
-                        def_class_value = def.value();
-                    }
+    public static <T> T setDefaultValues(T o, Class<?> def_class_value, Map<?, ?> f_def) {
+        if (o == null) {
+            return o;
+        }
 
-                    //получаем тип поля
-                    //если тип поля совпадает с типом поля в конфиг классе
-                    //то присваиваем ему значение из конфиг класса
-                    //иначе - ничего не делаем
-                    Class<?> fieldType = f.getType();
-                    if (def_class_value != null) {
-                        Field[] defValueFields = def_class_value.getDeclaredFields();
-                        for (Field f_def : defValueFields) {
-                            if (fieldType.equals(f_def.getType())) {
-                                f.set(o, f_def.get(def_class_value.newInstance()));
-                                break;
-                            }
-                        }
-                    }
-                }
+        Class<?> clazz = o.getClass();
+        Annotation[] annotations = clazz.getAnnotations();
+        Class<?> configClass = null;
+
+        for (Annotation ann : annotations) {
+            if (ann instanceof Default) {
+                configClass = ((Default) ann).value();
+                break;
             }
         }
+
+        if (configClass == null) {
+            return o;
+        }
+
+        try {
+            Object configInstance = configClass.getDeclaredConstructor().newInstance();
+
+            for (Field field : clazz.getDeclaredFields()) {
+                int modifiers = field.getModifiers();
+                if (java.lang.reflect.Modifier.isStatic(modifiers) ||
+                        java.lang.reflect.Modifier.isFinal(modifiers)) {
+                    continue;
+                }
+
+                field.setAccessible(true);
+
+                try {
+                    Field configField = configClass.getDeclaredField(field.getName());
+                    configField.setAccessible(true);
+                    Object defaultValue = configField.get(configInstance);
+                    field.set(o, defaultValue);
+                } catch (NoSuchFieldException e) {
+                    // Поле отсутствует в Config — ничего не делаем
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при установке значений по умолчания", e);
+        }
+
+        return o;
     }
-
 }
-

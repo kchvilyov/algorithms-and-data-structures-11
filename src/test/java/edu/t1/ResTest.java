@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public class ResTest {
 
+
     /**
      * "Test with null object parameters!"
      */
@@ -15,7 +16,7 @@ public class ResTest {
     {
         try {
             Res obj = new Res();
-            obj.reset(null);
+            Res.setDefaultValues(obj, null, null); // или нужные аргументы
         } catch (Exception e) {
         }
         Assertions.assertTrue(true);
@@ -25,31 +26,27 @@ public class ResTest {
     /**
      * Test with using full functionality of reset, using test classes
      */
-    @Test()
+    @Test
     public void testListOfClassesWithDefault() {
-
         A a = new A();
         B b = new B();
 
-        A res_a = new A();
-        res_a.t = 1d;
-        res_a.str = "Test";
+        Res.setDefaultValues(a, null, null);
+        Res.setDefaultValues(b, null, null);
 
-        B res_b = new B();
-        res_b.b=true;
-        res_b.t = 1d;
-        res_b.str = "Test";
+        A expectedA = new A();
+        expectedA.t = 1d;
+        expectedA.str = "Test";
 
-        Object[] actual = new Object[]{a, b};
-        Object[] expected = new Object[]{res_a, res_b};
-        try {
-            Res obj = new Res();
-            obj.reset(actual);
-        } catch (Exception e) {
-        }
-        Assertions.assertArrayEquals(actual, expected);
+        B expectedB = new B();
+        expectedB.t = 1d;
+        expectedB.str = "Test";
+        expectedB.b = true;
 
+        Assertions.assertEquals(expectedA, a);
+        Assertions.assertEquals(expectedB, b);
     }
+
     // Test with test class without default of annotation
     @Test()
     public void testListOfClassesWithoutDefault() {
@@ -57,7 +54,7 @@ public class ResTest {
         Object[] expected = new Object[]{new C()};
         try {
             Res obj = new Res();
-            obj.reset(actual);
+            Res.setDefaultValues(obj, null, null); // или нужные аргументы
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
