@@ -17,18 +17,27 @@ public class Res {
                 List<Field> fields =new ArrayList<>();
                 Class clz;
                 clz = o.getClass();
+                // получаем все поля класса и его родительские классы
+                // и добавляем их в список
                 while (clz != null) {
                     Field[] fields2 = clz.getDeclaredFields();
                     fields.addAll(Arrays.stream(fields2).toList());
                     clz = clz.getSuperclass();
                 }
-
+                // получаем все поля класса
+                // и если класс аннотирован Default
+                // то получаем конфиг класс аннотации
+                // и скидываем все поля до значений из конфиг класса
                 for (Field f : fields) {
                     if ( o.getClass().isAnnotationPresent(Default.class)) {
                         def = o.getClass().getAnnotation(Default.class);
                         def_class_value = def.value();
                     }
 
+                    //получаем тип поля
+                    //если тип поля совпадает с типом поля в конфиг классе
+                    //то присваиваем ему значение из конфиг класса
+                    //иначе - ничего не делаем
                     Class<?> fieldType = f.getType();
                     if (def_class_value != null) {
                         Field[] defValueFields = def_class_value.getDeclaredFields();
