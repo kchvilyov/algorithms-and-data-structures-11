@@ -47,7 +47,6 @@ public class Res {
                 Class<?> fieldType = objectField.getType();
 
                 // Ищем поле в Config с тем же типом
-                boolean fieldSetAlready = false;
                 for (Field configField : configClass.getDeclaredFields()) {
                     // Проверяем, что это поле не статическое и не final
                     // и совпадает ли тип
@@ -58,7 +57,6 @@ public class Res {
                         try {
                             Object defaultValue = configField.get(configInstance);
                             objectField.set(object, defaultValue);
-                            fieldSetAlready = true;
                             break; // Берём первое подходящее по типу
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException("Нет доступа к полю: " + configField.getName(), e);
