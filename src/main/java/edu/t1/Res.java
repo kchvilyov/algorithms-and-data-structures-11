@@ -11,9 +11,11 @@ public class Res {
     //указанного в конфиг классе этой аннотации
     public void reset(Object... objects) throws Exception {
         if (objects != null) {
+            // проверяем, что передали не пустой массив
             for (Object object : objects) {
+                //для каждого объекта из списка
                 if (object == null) {
-                    //пропускаем пустые объекты
+                    //пропускаем пустой объект
                     continue;
                 }
                 Default defaultAnnotation;
@@ -23,12 +25,16 @@ public class Res {
                     defaultAnnotation = object.getClass().getAnnotation(Default.class);
                     defaultAnnotationValue = defaultAnnotation.value();
                 }
+
+                //получаем все поля класса и его предков
                 List<Field> objectFields = new ArrayList<>();
                 Class objectClass;
+                //класс объекта
                 objectClass = object.getClass();
                 while (objectClass != null) {
                     Field[] currentClassFields = objectClass.getDeclaredFields();
                     objectFields.addAll(Arrays.stream(currentClassFields).toList());
+                    //переходим на класс предка этого объекта
                     objectClass = objectClass.getSuperclass();
                 }
 
