@@ -10,12 +10,18 @@ public class Res {
     // и если она есть - то скидывает значения всех полей до состояния
     //указанного в конфиг классе этой аннотации
     public void reset(Object... objects) throws Exception {
-        Default defaultAnnotavion;
-        Class defaultAnnotationValue = null;
         if (objects != null) {
             for (Object object : objects) {
                 if (object == null) {
+                    //пропускаем пустые объекты
                     continue;
+                }
+                Default defaultAnnotation;
+                Class defaultAnnotationValue = null;
+                if (object.getClass().isAnnotationPresent(Default.class)) {
+                    //получаем пояснение класса со значениями полей по умолчанию
+                    defaultAnnotation = object.getClass().getAnnotation(Default.class);
+                    defaultAnnotationValue = defaultAnnotation.value();
                 }
                 List<Field> objectFields = new ArrayList<>();
                 Class objectClass;
@@ -27,12 +33,6 @@ public class Res {
                 }
 
                 for (Field objectField : objectFields) {
-                    if (object.getClass().isAnnotationPresent(Default.class)) {
-                        //получаем аннотацию класса со значениями её полей по умолчанию
-                        defaultAnnotavion = object.getClass().getAnnotation(Default.class);
-                        defaultAnnotationValue = defaultAnnotavion.value();
-                    }
-
                     Class fieldType = objectField.getType();
                     if (defaultAnnotationValue != null) {
                         Field[] defaultAnnotationValueFields = defaultAnnotationValue.getDeclaredFields();
