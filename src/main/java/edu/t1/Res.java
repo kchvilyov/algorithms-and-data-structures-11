@@ -39,6 +39,7 @@ public class Res {
             for (Field objectField : objectFields) {
                 if (java.lang.reflect.Modifier.isStatic(objectField.getModifiers()) ||
                     java.lang.reflect.Modifier.isFinal(objectField.getModifiers())) {
+                    // Пропускаем статические и final поля
                     continue;
                 }
 
@@ -48,10 +49,7 @@ public class Res {
 
                 // Ищем поле в Config с тем же типом
                 for (Field configField : configClass.getDeclaredFields()) {
-                    // Проверяем, что это поле не статическое и не final
-                    // и совпадает ли тип
-                    // Если да, то копируем значение
-                    // Если нет, то пропускаем
+                    // Если тип совпадает, то копируем значение
                     if (configField.getType().equals(fieldType)) {
                         configField.setAccessible(true);
                         try {
