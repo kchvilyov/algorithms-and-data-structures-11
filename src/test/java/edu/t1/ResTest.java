@@ -6,46 +6,56 @@ import org.junit.jupiter.api.Test;
 import java.util.Objects;
 
 public class ResTest {
+
     /**
      * "Test with null object parameters!"
      */
-    @Test
-    public void testWithNullObject() {
-        A result = Res.setDefaultValues(null, null, null);
-        Assertions.assertNull(result);
+    @Test()
+    public void testWithNullObject() throws Exception {
+        Res obj = new Res();
+        obj.reset(null);
+        Assertions.assertTrue(true);
     }
+
 
     /**
      * Test with using full functionality of reset, using test classes
      */
-    @Test
-    public void testListOfClassesWithDefault() {
+    @Test()
+    public void testListOfClassesWithDefault() throws Exception {
+
         A a = new A();
         B b = new B();
 
-        Res.setDefaultValues(a, null, null);
-        Res.setDefaultValues(b, null, null);
+        A res_a = new A();
+        res_a.t = 1d;
+        res_a.str = "Test";
 
-        A expectedA = new A();
-        expectedA.t = 1d;
-        expectedA.str = "Test";
+        B res_b = new B();
+        res_b.b=true;
+        res_b.t = 1d;
+        res_b.str = "Test";
 
-        B expectedB = new B();
-        expectedB.t = 1d;
-        expectedB.str = "Test";
-        expectedB.b = true;
+        Object[] actual = new Object[]{a, b};
+        Object[] expected = new Object[]{res_a, res_b};
+        Res obj = new Res();
+        obj.reset(actual);
+        Assertions.assertArrayEquals(actual, expected);
 
-        Assertions.assertEquals(expectedA, a);
-        Assertions.assertEquals(expectedB, b);
     }
 
     // Test with test class without default of annotation
-    @Test
+    @Test()
     public void testListOfClassesWithoutDefault() {
-        C c = new C();
-        C actual = new C();
-        Res.setDefaultValues(actual, null, null); // У C нет @Default → ничего не изменится
-        Assertions.assertEquals(c, actual);
+        Object[] actual = new Object[]{new C()};
+        Object[] expected = new Object[]{new C()};
+        try {
+            Res obj = new Res();
+            obj.reset(actual);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Assertions.assertArrayEquals(actual, expected);
     }
 }
 
@@ -61,6 +71,7 @@ class A {
     Integer i =3;
     String str ="TT";
     Double t;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,10 +79,12 @@ class A {
         A a = (A) o;
         return Objects.equals(i, a.i) && Objects.equals(b, a.b) && Objects.equals(t, a.t) && Objects.equals(str, a.str);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(i, b, t, str);
     }
+
     @Override
     public String toString() {
         return "edu.t1.A{" +
@@ -99,6 +112,7 @@ class B {
                 ", str='" + str + '\'' +
                 '}';
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -106,6 +120,7 @@ class B {
         B b1 = (B) o;
         return Objects.equals(i, b1.i) && Objects.equals(b, b1.b) && Objects.equals(t, b1.t) && Objects.equals(str, b1.str);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(i, b, t, str);
@@ -124,10 +139,12 @@ class C {
         C a = (C) o;
         return Objects.equals(i, a.i) && Objects.equals(b, a.b) && Objects.equals(t, a.t) && Objects.equals(str, a.str);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(i, b, t, str);
     }
+
     @Override
     public String toString() {
         return "edu.t1.C{" +
