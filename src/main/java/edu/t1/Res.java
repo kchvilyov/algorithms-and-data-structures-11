@@ -1,46 +1,45 @@
 package edu.t1;
 
-import edu.t1.Default;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class Res {
     //суть метода в том, что он смотрит на классе объекта аннотацию
     // и если она есть - то скидывает значения всех полей до состояния
     //указанного в конфиг классе этой аннотации
-    public void reset(Object... obj) throws Exception {
-        Default def;
-        boolean isDefExists = false;
-        Class def_class_value = null;
-        if (obj != null) {
-            for (Object o : obj) {
-                List<Field> fields =new ArrayList<>();
-                Class clz;
-                clz = o.getClass();
-                while (clz != null) {
-                    Field[] fields2 = clz.getDeclaredFields();
-                    fields.addAll(Arrays.stream(fields2).toList());
-                    clz = clz.getSuperclass();
+    public void reset(Object... objects) throws Exception {
+        Default defaultAnnotavion;
+        Class defaultAnnotationValue = null;
+        if (objects != null) {
+            for (Object object : objects) {
+                if (object == null) {
+                    continue;
+                }
+                List<Field> objectFields = new ArrayList<>();
+                Class objectClass;
+                objectClass = object.getClass();
+                while (objectClass != null) {
+                    Field[] currentClassFields = objectClass.getDeclaredFields();
+                    objectFields.addAll(Arrays.stream(currentClassFields).toList());
+                    objectClass = objectClass.getSuperclass();
                 }
 
-                for (Field f : fields) {
-                    if ( o.getClass().isAnnotationPresent(Default.class)) {
-                        def = o.getClass().getAnnotation(Default.class);
-                        def_class_value = def.value();
+                for (Field objectField : objectFields) {
+                    if (object.getClass().isAnnotationPresent(Default.class)) {
+                        //получаем аннотацию класса со значениями её полей по умолчанию
+                        defaultAnnotavion = object.getClass().getAnnotation(Default.class);
+                        defaultAnnotationValue = defaultAnnotavion.value();
                     }
 
-                    Class fieldtype = f.getType();
-                    if (def_class_value != null) {
-                        isDefExists = false;
-                        Field[] defValueFields = def_class_value.getDeclaredFields();
-                        for (Field f_def : defValueFields) {
-                            if (fieldtype.equals(f_def.getType())) {
-                                f.set(o, f_def.get(def_class_value.newInstance()));
-                                isDefExists = true;
+                    Class fieldType = objectField.getType();
+                    if (defaultAnnotationValue != null) {
+                        Field[] defaultAnnotationValueFields = defaultAnnotationValue.getDeclaredFields();
+                        for (Field defaultValueField : defaultAnnotationValueFields) {
+                            //если тип поля совпадает с типом поля по умолчанию
+                            if (fieldType.equals(defaultValueField.getType())) {
+                                objectField.set(object, defaultValueField.get(defaultAnnotationValue.newInstance()));
                                 break;
                             }
                         }
