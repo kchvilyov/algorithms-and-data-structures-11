@@ -33,14 +33,7 @@ public class Res {
                 throw new RuntimeException("Не удалось создать экземпляр класса конфигурации: " + configClass.getSimpleName(), e);
             }
 
-            // Собираем все поля объекта, включая приватные и от суперклассов
-            List<Field> objectFields = new ArrayList<>();
-            Class<?> currentClass = objectClass;
-            while (currentClass != null && currentClass != Object.class) {
-                Field[] declaredFields = currentClass.getDeclaredFields();
-                objectFields.addAll(Arrays.asList(declaredFields));
-                currentClass = currentClass.getSuperclass();
-            }
+            List<Field> objectFields = getAllFields(objectClass);
 
             // Для каждого поля объекта ищем совпадение по типу в Config
             for (Field objectField : objectFields) {
@@ -54,23 +47,40 @@ public class Res {
                 Class<?> fieldType = objectField.getType();
 
                 // Ищем поле в Config с тем же типом
-                boolean found = false;
+                boolean fieldSetAlready = false;
                 for (Field configField : configClass.getDeclaredFields()) {
+                    // Проверяем, что это поле не статическое и не final
+                    // и совпадает ли тип
+                    // Если да, то копируем значение
+                    // Если нет, то пропускаем
                     if (configField.getType().equals(fieldType)) {
                         configField.setAccessible(true);
                         try {
                             Object defaultValue = configField.get(configInstance);
                             objectField.set(object, defaultValue);
-                            found = true;
+                            fieldSetAlready = true;
                             break; // Берём первое подходящее по типу
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException("Нет доступа к полю: " + configField.getName(), e);
                         }
                     }
                 }
-
-                // Если не нашли — можно оставить как есть
+                // Если не нашли — оставляем как есть
             }
         }
+    }
+
+    /**
+     * Получаем все поля объекта, включая приватные и от суперклассов
+     */
+    private static List<Field> getAllFields(Class<?> objectClass) {
+        List<Field> objectFields = new ArrayList<>();
+        Class<?> currentClass = objectClass;
+        while (currentClass != null && currentClass != Object.class) {
+            Field[] declaredFields = currentClass.getDeclaredFields();
+            objectFields.addAll(Arrays.asList(declaredFields));
+            currentClass = currentClass.getSuperclass();
+        }
+        return objectFields;
     }
 }
