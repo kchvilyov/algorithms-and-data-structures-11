@@ -9,7 +9,7 @@ public class Res {
     //суть метода в том, что он смотрит на классе объекта аннотацию
     // и если она есть - то скидывает значения всех полей до состояния
     //указанного в конфиг классе этой аннотации
-    public void reset(Object... objects) throws Exception {
+    public void reset(Object... objects) throws RuntimeException {
         if (objects == null) {
             return;
         }
