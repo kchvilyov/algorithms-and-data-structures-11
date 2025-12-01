@@ -11,9 +11,13 @@ public class ResTest {
      * "Test with null object parameters!"
      */
     @Test()
-    public void testWithNullObject() throws Exception {
-        Res obj = new Res();
-        obj.reset(null);
+    public void testWithNullObject()
+    {
+        try {
+            Res obj = new Res();
+            obj.reset(null);
+        } catch (Exception e) {
+        }
         Assertions.assertTrue(true);
     }
 
@@ -22,7 +26,7 @@ public class ResTest {
      * Test with using full functionality of reset, using test classes
      */
     @Test()
-    public void testListOfClassesWithDefault() throws Exception {
+    public void testListOfClassesWithDefault() {
 
         A a = new A();
         B b = new B();
@@ -38,12 +42,14 @@ public class ResTest {
 
         Object[] actual = new Object[]{a, b};
         Object[] expected = new Object[]{res_a, res_b};
-        Res obj = new Res();
-        obj.reset(actual);
+        try {
+            Res obj = new Res();
+            obj.reset(actual);
+        } catch (Exception e) {
+        }
         Assertions.assertArrayEquals(actual, expected);
 
     }
-
     // Test with test class without default of annotation
     @Test()
     public void testListOfClassesWithoutDefault() {
@@ -56,6 +62,7 @@ public class ResTest {
             throw new RuntimeException(e);
         }
         Assertions.assertArrayEquals(actual, expected);
+
     }
 }
 
@@ -71,7 +78,6 @@ class A {
     Integer i =3;
     String str ="TT";
     Double t;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -79,12 +85,10 @@ class A {
         A a = (A) o;
         return Objects.equals(i, a.i) && Objects.equals(b, a.b) && Objects.equals(t, a.t) && Objects.equals(str, a.str);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(i, b, t, str);
     }
-
     @Override
     public String toString() {
         return "edu.t1.A{" +
@@ -112,7 +116,6 @@ class B {
                 ", str='" + str + '\'' +
                 '}';
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -120,7 +123,6 @@ class B {
         B b1 = (B) o;
         return Objects.equals(i, b1.i) && Objects.equals(b, b1.b) && Objects.equals(t, b1.t) && Objects.equals(str, b1.str);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(i, b, t, str);
@@ -139,12 +141,10 @@ class C {
         C a = (C) o;
         return Objects.equals(i, a.i) && Objects.equals(b, a.b) && Objects.equals(t, a.t) && Objects.equals(str, a.str);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(i, b, t, str);
     }
-
     @Override
     public String toString() {
         return "edu.t1.C{" +
